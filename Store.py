@@ -7,7 +7,3 @@ class Store:
             self.currentlyOpen = True # Boolean variable saying whether this store is currently selling magic bags
         else:
             self.currentlyOpen = False
-
-    # String representation of the class
-    def __repr__(self):
-        return self.displayName + " with " + str(numOfBags) + " magic bags left."

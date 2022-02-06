@@ -1,11 +1,15 @@
 
 import sys
 import time
+import datetime
 import os
+from Store import Store
 # https://github.com/ahivert/tgtg-python
 from tgtg import TgtgClient
+from gtts import gTTS
+from playsound import playsound
 
-# Main loop
+# Main method
 def main():
     # check command line for email address
     if(len(sys.argv) == 2):
@@ -18,12 +22,14 @@ def main():
     client = login(email)
 
     # Currently will only take stores from the favoutites list
-    Stores = getStores(client.get_items())
+    stores = getStores(client.get_items())
 
     # Before moving to the main loop list which stores currently have magic bags
+    for store in stores.values():
+        if(store.currentlyOpen):
+            annouceAvaiableStore(store)
 
-    # annouceAvaiableStores()
-
+    # Main loop
     while(True):
         itemsFromFavoutites = client.get_items()
 
@@ -36,24 +42,25 @@ def main():
             currStore = stores[currStoreId]
 
             # Check store is closed
-            if(currStore.currentlyOpen && numOfBagsAvailable == 0) {
+            if(currStore.currentlyOpen and numOfBagsAvailable == 0):
                 # announce store is closed
+                announceUnavaiableStore(currStore)
                 # Change store to say they are closed
                 currStore.currentlyOpen = False
                 currStore.numOfBags = 0
-            }
+
             # Check if the store is open
-            elif(not currStore.currentlyOpen && numOfBagsAvailable > 0) {
+            elif(not currStore.currentlyOpen and numOfBagsAvailable > 0):
                 # Announce store is open
+                annouceAvaiableStore(currStore)
                 # Change store to say they are open
                 currStore.currentlyOpen = True
                 # Update the number of bags available
                 currStore.numOfBags = numOfBagsAvailable
-            }
         # Run this every minute, does not need to check very often
         time.sleep(60)
 
-
+# Deals with logging into the tgtg app to access the api
 def login(email):
     print("Attemping to login into account: " + email)
     # Recieve client credentials by logging in to account via email authentication
@@ -77,6 +84,7 @@ def login(email):
 
     return client
 
+# From an api call get all the stores and put them in store objects within a map
 def getStores(storeApiCall):
     # Each item on map stored by store_id : <Store object>
     stores = {}
@@ -89,6 +97,35 @@ def getStores(storeApiCall):
         stores[storeId] = Store(displayName, itemsAvailable)
 
     return stores
+
+# Used to announce when a store has some magic bags
+def annouceAvaiableStore(store):
+    msg = "Magic bags available at " + store.displayName
+    # Print to the terminal with a time stamp
+    print(getCurrentTime() + msg)
+    announceMsg(msg)
+
+# Used to announce when a store has no more magic bags
+def announceUnavaiableStore(store):
+    msg = "Store " + store.displayName + "has just run out of magic bags"
+    # Print to the terminal with a time stamp
+    print(getCurrentTime() + msg)
+    announceMsg(msg)
+
+# Return the current time as a str
+def getCurrentTime():
+    now = datetime.datetime.now()
+    return now.strftime("%H:%M:%S ")
+
+# Annouce a text message using google translate text to speech feature
+def announceMsg(msg):
+    # Make a gtts object which will speek the msg
+    tts = gTTS(msg, lang='en-gb')
+    tts.save("annoucement.mp3")
+    # playsound function is blocking by default, so won't remove file until its finished playing
+    playsound("annoucement.mp3")
+    # Since I am lazy I am just going to do this in a simple way for now, creating the mp3 and then deleting it
+    os.remove("annoucement.mp3")
 
 if __name__ == "__main__":
     main()
