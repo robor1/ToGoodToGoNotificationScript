@@ -6,25 +6,26 @@ Windows commands below, linux won't be too different from this.
 
 ## Initial setup:
 
-Set destination of virtual environment (will need to be done whenever moving the directory of the virtual environment).
-Access the activate text file (<Project Folder>\tgtgAPI\Scripts\activate), go down to the line with VIRTUAL_ENV="" and
-fill in the text box with the location of your virtual environment.
+I would reccommend setting up a virtual enviroment before installing these modules, this is not essential however.
 
-Example virtual environment location: C:\Users\JohnSmith\Documents\ToGoodToGoNotificationScript\tgtgApi
+Now install the following modules using pip; tgtg, gtts, pyttsx3 and playsound.
+
+But you can run the following command to do so all at once:
+
+`pip install tgtg gtts pyttsx3 playsound`
 
 ## Run Instructions
 
-1. Active venv
-<Project directory>\tgtgApi\Scripts\activate.exe 
 
-2. Use this command in the terminal in the same directory as the file tgtgApiTestProg.py 
-python tgtgApiTestProg.py <email adress of tgtg account>
+1. Run python program using the following command
 
-3. validate login on email address
+`python Main.py <email adress of Too Good To Go account>`
 
-Now it should be running
+2. The program will ask you to now validate login via email before being able to make api calls
 
-#Current Goals to achieve
+Now it should be running, a voice notification should now be made whenever a store gets new magic bags or sells out of magic bags
+
+## Current Goals to achieve
 
 - [x] Upload to GitHub (DONE)
 
@@ -33,7 +34,5 @@ Now it should be running
 - [ ] Add a text to speech bot to notify the user when the above has happened
 
 - [ ] Polish up code
-
-- [ ] Figure out venv and best way to run the program
 
 - [ ] Check funtionality on linux and mac
